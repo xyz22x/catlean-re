@@ -26,7 +26,10 @@ Alvo: `C:\Users\marcos\Downloads\catlean.jar` (Fabric/MC 1.21.11, Loader 0.18.2,
 - **Revertido/parcial:** simplificação de fluxo (14.504 dobras) e remoção de código morto/handlers (306) verificadas; 30 literais de string recuperados (dinâmico); reflection transformer aplicado (sem redução mensurável dos indys `vm`). Código decompilado mais legível (CFR/Vineflower) sobre o bytecode transformado.
 - **Resta (bloqueado sem changelog/apoio de runtime específico):** nomes originais; ~19 strings `str_skipped` + o grande conjunto de indys DES `(IJ)` com args computados (method-parameter-changes) e referências/indys `vm` (21.799 bsm vm / 39.974 indys totais observados) — exigem suporte específico ao modo ZKM2 param-change ou emulação/runtime direcionado por site (complexo e dependente do modelo do ofuscador).
 
+## Tentativas próprias (custom, ASM)
+- `strdeobf/StrDeobf.java` + `Dbg.java` (ASM via `zkm-deobfuscator-all.jar`, resolução dinâmica de bootstraps, autorizada): identificou 18.626 indys `(IJ)/(JI)`; ao inspecionar `CatLean.(IJ)String` (bootstrap `su/catlean/CatLean.a`) os **2 args anteriores ao indy são `LLOAD`+`LXOR` (computados, não constantes)** no original e no jar transformado — logo substituição `LDC` por constantes é inviável sem rastrear/avaliar o fluxo de parâmetros mágicos. Resultado: `patched=0 skipped=11934` (execução de prova). Métrica indy global estável (original/jd/dyn): `indy=39974 vm_bsm=21799 (IJ)String=11934`.
+
 ## Artefatos
 - Jars deobf: `opencode temp` (`catlean-deobf-v103*.jar`, `catlean-deobf-v103-dyn.jar`, `catlean-jd*.jar`, `cfr.jar`, `recaf*.jar`, `strdeobf/`).
-- Fontes legíveis: `decompiled/`, `decompiled-deobf-dyn/`, `decompiled-cfr-dyn/`, `decompiled-cfr-jd/` (se gerado).
-- Build compilável: `project/` (SUCESSO) e `project-deobf/`.
+- Fontes legíveis: `decompiled/`, `decompiled-deobf-dyn/`, `decompiled-cfr-dyn/`, `decompiled-cfr-jd/`, `decompiled-built-cfr/` (CFR do JAR construído).
+- Build compilável: `project/` (**BUILD SUCCESSFUL**, jar 8.353.225 B) e `project-deobf/` (híbrido sobre deobf-dyn).
