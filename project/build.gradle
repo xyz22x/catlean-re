@@ -1,0 +1,80 @@
+plugins {
+    id 'fabric-loom' version '1.14.10'
+    id 'java'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    // Fontes decompiladas usam namespace INTERMEDIARY (class_xxx/method_xxx/field_xxx),
+    // consistente com o jar original e com a access widener. Usamos o mapeamento
+    // intermediary oficial como "named" via arquivo local identity (intermediary->named).
+    mappings files("mappings/intermediary-identity.jar")
+
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+
+    // APIs Fabric (mod) - o jar original declara dependência "fabric:*"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Bibliotecas puras embutidas no jar original (resolvidas por Maven para compilar;
+    // o jar final do mod dependerá do runtime do Fabric/Kotlin como o original).
+    implementation "org.jetbrains:annotations:13.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:${project.serialization_version}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:${project.serialization_version}"
+    implementation "io.netty:netty-handler-proxy:${project.netty_version}"
+    implementation "io.netty:netty-codec-socks:${project.netty_version}"
+    implementation "com.github.weisj:jsvg:${project.jsvg_version}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${project.kotlin_stdlib_version}"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:${project.kotlin_stdlib_version}"
+
+    // dev.redstones.mediaplayerinfo está incluído como fonte em src/main/java (bundled no original).
+    // discord-ipc v1.1: não encontrado como fonte bundled; oq.class (RPC) é obfuscado.
+    // Se o compilador exigir tipos IPC, adicionar stub em src ou o jar em libs/.
+
+    // Entrypoints originais (descompilação .kt inválida) fornecidos como .class pré-compilados.
+    compileOnly files('libs-precompiled')
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/catlean.accesswidener")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs += ['-Xlint:none', '-nowarn', '-Xmaxerrs', '2000', '-Xmaxwarns', '1']
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+jar {
+    from('libs-precompiled') {
+        include '**/*.class'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

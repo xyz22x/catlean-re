@@ -1,0 +1,32 @@
+# Gradle / Loom / build outputs
+.gradle/
+**/build/
+!**/src/**/build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.run/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local logs/caches
+*.log
+compile-now.log
+build-final.log
+compile-fix.log
+compile-fix.pass1.log
+compile-last.log
+
+# Gradle wrapper jar can be regenerated; keep properties/scripts
+# (uncomment to ignore wrapper jar)
+# **/gradle/wrapper/gradle-wrapper.jar
+
+# Large/local tool caches (not source)
+# Decompiled raw output and hybrid broken sources are source evidence — kept by default.
+# Uncomment to reduce repo size (repro via run-decompile.ps1 + jar):
+# /decompiled/
+# /project/broken-src/
