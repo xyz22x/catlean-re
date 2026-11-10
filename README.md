@@ -53,3 +53,5 @@ Saída esperada: `BUILD SUCCESSFUL` e `project/build/libs/catlean-re-0.1.2-re.ja
 ## Notas
 - `build/` e `.gradle/` são gerados e ficam ignorados pelo Git; `decompiled/`, `broken-src/` e `libs-precompiled/` são mantidos como evidência/reprodutibilidade da reconstrução.
 - Reescrever manualmente as unidades ofuscadas para fonte equivalente é uma etapa de desofuscação separada; a abordagem híbrida acima preserva a semântica do bytecode original e garante um build reproduzível sem erros.
+
+- NOTE: THIS IS NOT A OFFICIAL VERSION OF CATLEAN,IS A DECOMPILED AND RECOMPILED OPENSRC VERSION. ALL CREDITS IS FROM CATLEAN DEVELOPERS,THE CODE IS NOT MINE BUT THE REPO IS. EDUCATIONAL PROJECT
